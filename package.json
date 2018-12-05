@@ -1,0 +1,22 @@
+{
+  "name": "following-chantastics-2018-react-holiday-3-minimum-viable-suspense",
+  "version": "1.0.0",
+  "description": "https://www.youtube.com/watch?v=W0wzf36-Gjs",
+  "keywords": [],
+  "main": "src/index.js",
+  "dependencies": {
+    "classnames": "2.2.6",
+    "react": "16.7.0-alpha.2 - next",
+    "react-cache": "16.6.0-alpha.8af6728 - canary",
+    "react-dom": "16.7.0-alpha.2 - next",
+    "react-scripts": "2.0.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": [">0.2%", "not dead", "not ie <= 11", "not op_mini all"]
+}
