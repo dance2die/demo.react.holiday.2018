@@ -1,19 +1,59 @@
 import React, { useState, Suspense } from "react";
 import ReactDOM from "react-dom";
-import { createCache, createResource } from "react-cache";
+import { unstable_createResource as createResource } from "react-cache";
 import classNames from "classnames";
 
 import "./styles.css";
 
 /*
+  December 6, 2018
+  Following Chantastic's React Holiday 6
+  https://youtu.be/yrmnKJzTlDU
+  - Added ErrorBoundary around Suspense in case inner component throws an error
+
+  December 4, 2018
+  Following Chantastic's React Holiday 4
+  https://youtu.be/itRhI66VHwQ
+  - Updated to use `react-cache` v2.0.0-alpha.1
+  - Requires no `createCache`
+  - Read react-cache source 👉 https://github.com/facebook/react/tree/master/packages/react-cache
+
+  December 3, 2018
   Following Chantastic's React Holiday 3
   https://www.youtube.com/watch?v=W0wzf36-Gjs
+
   CSS theme: NES.css - https://bcrikko.github.io/NES.css/
 */
 
-const cache = createCache();
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    // Update state so the next render will show the fallback UI.
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, info) {
+    // You can also log the error to an error reporting service
+    console.log(error, info);
+  }
+
+  render() {
+    const { fallback, children } = this.props;
+
+    if (this.state.hasError) {
+      return fallback || <h1>Something went wrong.</h1>;
+    }
+
+    return children;
+  }
+}
+
 const pokemonResource = createResource(() =>
-  fetch(`https://pokeapi.co/api/v2/pokemon/`).then(_ => _.json())
+  fetch(`https://pokeapi.co/api/v2/pokemon-nope/`).then(_ => _.json())
 );
 
 function Pokemon({ className, as: Component = `li`, ...rest }) {
@@ -26,7 +66,7 @@ function Pokemon({ className, as: Component = `li`, ...rest }) {
 }
 
 function Pokemons() {
-  const pokemons = pokemonResource.read(cache).results.map(({ name }) => (
+  const pokemons = pokemonResource.read().results.map(({ name }) => (
     <Pokemon key={name} className="pokemon">
       {name}
     </Pokemon>
@@ -51,9 +91,11 @@ function App() {
       <h1 className="balloon from-left">
         <SpreadLove /> of Pokemons!
       </h1>
-      <Suspense fallback={<div>Loading....🦑</div>}>
-        <Pokemons />
-      </Suspense>
+      <ErrorBoundary fallback={<div>Pokemon got away!</div>}>
+        <Suspense fallback={<div>Loading....🦑</div>}>
+          <Pokemons />
+        </Suspense>
+      </ErrorBoundary>
     </div>
   );
 }
