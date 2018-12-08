@@ -6,6 +6,12 @@ import classNames from "classnames";
 import "./styles.css";
 
 /*
+
+  December 8, 2018
+  Following Chantastic's React Holiday 7
+  https://youtu.be/lnr1HM6GRnw
+  - Keep track of selected pokemon ID using `useState`
+
   December 6, 2018
   Following Chantastic's React Holiday 6
   https://youtu.be/yrmnKJzTlDU
@@ -53,7 +59,7 @@ class ErrorBoundary extends React.Component {
 }
 
 const pokemonResource = createResource(() =>
-  fetch(`https://pokeapi.co/api/v2/pokemon-nope/`).then(_ => _.json())
+  fetch(`https://pokeapi.co/api/v2/pokemon/`).then(_ => _.json())
 );
 
 function Pokemon({ className, as: Component = `li`, ...rest }) {
@@ -65,9 +71,13 @@ function Pokemon({ className, as: Component = `li`, ...rest }) {
   );
 }
 
-function Pokemons() {
-  const pokemons = pokemonResource.read().results.map(({ name }) => (
-    <Pokemon key={name} className="pokemon">
+function Pokemons({ onSelect }) {
+  const pokemons = pokemonResource.read().results.map(({ name, url }) => (
+    <Pokemon
+      key={name}
+      className="pokemon"
+      onClick={() => onSelect(url.split("/")[6])}
+    >
       {name}
     </Pokemon>
   ));
@@ -86,14 +96,17 @@ function SpreadLove() {
 }
 
 function App() {
+  const [selectedPokemonId, setSelectedPokemonId] = useState(1);
+
   return (
     <div className="App">
       <h1 className="balloon from-left">
         <SpreadLove /> of Pokemons!
       </h1>
+      <strong>Selected Pokemon ID: {selectedPokemonId}</strong>
       <ErrorBoundary fallback={<div>Pokemon got away!</div>}>
         <Suspense fallback={<div>Loading....🦑</div>}>
-          <Pokemons />
+          <Pokemons onSelect={id => setSelectedPokemonId(id)} />
         </Suspense>
       </ErrorBoundary>
     </div>
