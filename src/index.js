@@ -6,6 +6,9 @@ import classNames from "classnames";
 import "./styles.css";
 
 /*
+  December 9, 2018
+  Following Chantastic's React Holiday 8
+  https://youtu.be/Hy2TU4FzlmI
 
   December 8, 2018
   Following Chantastic's React Holiday 7
