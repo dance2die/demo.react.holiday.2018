@@ -6,6 +6,12 @@ import classNames from "classnames";
 import "./styles.css";
 
 /*
+  December 11, 2018
+  Following Chantastic's React Holiday 9, 10, 11
+  - 9  https://youtu.be/PVDFILy1zGc
+  - 10 https://youtu.be/_jehVItn7Vo
+  - 11 https://youtu.be/hNi1FR_mVxQ
+
   December 9, 2018
   Following Chantastic's React Holiday 8
   https://youtu.be/Hy2TU4FzlmI
@@ -61,8 +67,14 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-const pokemonResource = createResource(() =>
-  fetch(`https://pokeapi.co/api/v2/pokemon/`).then(_ => _.json())
+const getJson = _ => _.json();
+
+const pokemonCollectionResource = createResource(() =>
+  fetch(`https://pokeapi.co/api/v2/pokemon/`).then(getJson)
+);
+
+const pokemonResource = createResource(id =>
+  fetch(`https://pokeapi.co/api/v2/pokemon/${id}/`).then(getJson)
 );
 
 function Pokemon({ className, as: Component = `li`, ...rest }) {
@@ -74,18 +86,12 @@ function Pokemon({ className, as: Component = `li`, ...rest }) {
   );
 }
 
-function Pokemons({ onSelect }) {
-  const pokemons = pokemonResource.read().results.map(({ name, url }) => (
-    <Pokemon
-      key={name}
-      className="pokemon"
-      onClick={() => onSelect(url.split("/")[6])}
-    >
-      {name}
-    </Pokemon>
-  ));
-
-  return <ul className="container is-dark">{pokemons}</ul>;
+function Pokemons({ renderItem }) {
+  return pokemonCollectionResource
+    .read()
+    .results.map(pokeymon =>
+      renderItem({ id: pokeymon.url.split("/")[6], ...pokeymon })
+    );
 }
 
 function SpreadLove() {
@@ -98,6 +104,10 @@ function SpreadLove() {
   );
 }
 
+function PokemonDetail({ pokemonId: id, render }) {
+  return render(pokemonResource.read(id));
+}
+
 function App() {
   const [selectedPokemonId, setSelectedPokemonId] = useState(1);
 
@@ -106,10 +116,36 @@ function App() {
       <h1 className="balloon from-left">
         <SpreadLove /> of Pokemons!
       </h1>
-      <strong>Selected Pokemon ID: {selectedPokemonId}</strong>
+
       <ErrorBoundary fallback={<div>Pokemon got away!</div>}>
         <Suspense fallback={<div>Loading....🦑</div>}>
-          <Pokemons onSelect={id => setSelectedPokemonId(id)} />
+          <PokemonDetail
+            pokemonId={selectedPokemonId}
+            render={detail => (
+              <article>
+                <h2>{detail.name}</h2>
+                <div>
+                  <p>Weight: {detail.weight}</p>
+                  <p>Height: {detail.height}</p>
+                </div>
+              </article>
+            )}
+          />
+
+          <Pokemons
+            className="container"
+            renderItem={({ name, id }) => (
+              <Pokemon
+                key={id}
+                className="pokemon"
+                onClick={() => setSelectedPokemonId(id)}
+              >
+                {name}
+              </Pokemon>
+            )}
+          />
+
+          {/*<Pokemons onSelect={id => setSelectedPokemonId(id)} />*/}
         </Suspense>
       </ErrorBoundary>
     </div>
