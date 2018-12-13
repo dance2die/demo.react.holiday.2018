@@ -1,11 +1,25 @@
 import React, { useState, Suspense } from "react";
 import ReactDOM from "react-dom";
-import { unstable_createResource as createResource } from "react-cache";
-import classNames from "classnames";
+
+import ErrorBoundary from "./ErrorBoundary";
+import {
+  Detail as PokemonDetail,
+  Pokemons,
+  Pokemon,
+  ListFallback as PokemonListFallback,
+  ListError as PokemonListError
+} from "./Pokemon";
 
 import "./styles.css";
 
 /*
+  December 12, 2018
+  Following Chantastic's React Holiday 12
+  https://youtu.be/PTn0OJk3Kqg
+  - Extract Pokemon functionality
+  - Extract Error Boundary functionality
+
+
   December 11, 2018
   Following Chantastic's React Holiday 9, 10, 11
   - 9  https://youtu.be/PVDFILy1zGc
@@ -40,60 +54,6 @@ import "./styles.css";
   CSS theme: NES.css - https://bcrikko.github.io/NES.css/
 */
 
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(error) {
-    // Update state so the next render will show the fallback UI.
-    return { hasError: true };
-  }
-
-  componentDidCatch(error, info) {
-    // You can also log the error to an error reporting service
-    console.log(error, info);
-  }
-
-  render() {
-    const { fallback, children } = this.props;
-
-    if (this.state.hasError) {
-      return fallback || <h1>Something went wrong.</h1>;
-    }
-
-    return children;
-  }
-}
-
-const getJson = _ => _.json();
-
-const pokemonCollectionResource = createResource(() =>
-  fetch(`https://pokeapi.co/api/v2/pokemon/`).then(getJson)
-);
-
-const pokemonResource = createResource(id =>
-  fetch(`https://pokeapi.co/api/v2/pokemon/${id}/`).then(getJson)
-);
-
-function Pokemon({ className, as: Component = `li`, ...rest }) {
-  return (
-    <Component
-      className={classNames(`pokemon-list-item`, className)}
-      {...rest}
-    />
-  );
-}
-
-function Pokemons({ renderItem }) {
-  return pokemonCollectionResource
-    .read()
-    .results.map(pokeymon =>
-      renderItem({ id: pokeymon.url.split("/")[6], ...pokeymon })
-    );
-}
-
 function SpreadLove() {
   return (
     <>
@@ -102,10 +62,6 @@ function SpreadLove() {
       {`}`}
     </>
   );
-}
-
-function PokemonDetail({ pokemonId: id, render }) {
-  return render(pokemonResource.read(id));
 }
 
 function App() {
@@ -117,8 +73,8 @@ function App() {
         <SpreadLove /> of Pokemons!
       </h1>
 
-      <ErrorBoundary fallback={<div>Pokemon got away!</div>}>
-        <Suspense fallback={<div>Loading....🦑</div>}>
+      <ErrorBoundary fallback={PokemonListError}>
+        <Suspense fallback={PokemonListFallback}>
           <PokemonDetail
             pokemonId={selectedPokemonId}
             render={detail => (
@@ -144,8 +100,6 @@ function App() {
               </Pokemon>
             )}
           />
-
-          {/*<Pokemons onSelect={id => setSelectedPokemonId(id)} />*/}
         </Suspense>
       </ErrorBoundary>
     </div>
