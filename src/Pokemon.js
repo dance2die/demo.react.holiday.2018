@@ -1,6 +1,7 @@
 import React from "react";
 import { unstable_createResource as createResource } from "react-cache";
 import classNames from "classnames";
+import sleep from "sleep-promise";
 
 const getJson = _ => _.json();
 
@@ -34,7 +35,7 @@ export function Detail({ pokemonId: id, render }) {
 }
 
 export function ListFallback() {
-  return <article>Loading....🦑</article>;
+  return <article>Loading Pokemons 🦑...</article>;
 }
 
 export function ListError() {

@@ -13,6 +13,12 @@ import {
 import "./styles.css";
 
 /*
+  December 14, 2018
+  Following Chantastic's React Holiday 13, 14
+  - 13 https://youtu.be/CfV4EDqes38
+    - Playing around with maxDuration
+  - 14 https://youtu.be/xdCSdJ_2XlY
+
   December 12, 2018
   Following Chantastic's React Holiday 12
   https://youtu.be/PTn0OJk3Kqg
@@ -73,8 +79,8 @@ function App() {
         <SpreadLove /> of Pokemons!
       </h1>
 
-      <ErrorBoundary fallback={PokemonListError}>
-        <Suspense fallback={PokemonListFallback}>
+      <ErrorBoundary fallback={<PokemonListError />}>
+        <Suspense maxDuration={2500} fallback={<PokemonListFallback />}>
           <PokemonDetail
             pokemonId={selectedPokemonId}
             render={detail => (
@@ -87,7 +93,6 @@ function App() {
               </article>
             )}
           />
-
           <Pokemons
             className="container"
             renderItem={({ name, id }) => (
@@ -107,4 +112,5 @@ function App() {
 }
 
 const rootElement = document.getElementById("root");
-ReactDOM.render(<App />, rootElement);
+// ReactDOM.render(<App />, rootElement);
+ReactDOM.createRoot(rootElement).render(<App />);
