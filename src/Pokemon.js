@@ -6,11 +6,15 @@ import sleep from "sleep-promise";
 const getJson = _ => _.json();
 
 const pokemonCollectionResource = createResource(() =>
-  fetch(`https://pokeapi.co/api/v2/pokemon/`).then(getJson)
+  fetch(`https://pokeapi.co/api/v2/pokemon/`)
+    .then(getJson)
+    .then(sleep(750))
 );
 
 const pokemonResource = createResource(id =>
-  fetch(`https://pokeapi.co/api/v2/pokemon/${id}/`).then(getJson)
+  fetch(`https://pokeapi.co/api/v2/pokemon/${id}/`)
+    .then(getJson)
+    .then(sleep(1500))
 );
 
 export function Pokemon({ className, as: Component = `li`, ...rest }) {

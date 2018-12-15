@@ -16,3 +16,23 @@ li {
 .pokemon-list-item {
   color: palevioletred;
 }
+
+.content {
+  display: grid;
+  grid-gap: 10px;
+  grid: 1fr / 1fr 1fr;
+}
+
+.pokemons {
+  grid-column-end: 2;
+}
+
+/* .pokemon-detail,
+content > article  */
+article {
+  grid-column-start: 2;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 10px;
+  height: min-content;
+}

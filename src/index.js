@@ -78,35 +78,40 @@ function App() {
       <h1 className="balloon from-left">
         <SpreadLove /> of Pokemons!
       </h1>
-
-      <ErrorBoundary fallback={<PokemonListError />}>
-        <Suspense maxDuration={2500} fallback={<PokemonListFallback />}>
-          <PokemonDetail
-            pokemonId={selectedPokemonId}
-            render={detail => (
-              <article>
-                <h2>{detail.name}</h2>
-                <div>
-                  <p>Weight: {detail.weight}</p>
-                  <p>Height: {detail.height}</p>
-                </div>
-              </article>
-            )}
-          />
-          <Pokemons
-            className="container"
-            renderItem={({ name, id }) => (
-              <Pokemon
-                key={id}
-                className="pokemon"
-                onClick={() => setSelectedPokemonId(id)}
-              >
-                {name}
-              </Pokemon>
-            )}
-          />
-        </Suspense>
-      </ErrorBoundary>
+      <div className="content">
+        <ErrorBoundary fallback={<PokemonListError />}>
+          <Suspense maxDuration={250} fallback={<PokemonListFallback />}>
+            <ul>
+              <Pokemons
+                className="pokemons"
+                renderItem={({ name, id }) => (
+                  <Pokemon
+                    key={id}
+                    className="pokemon"
+                    onClick={() => setSelectedPokemonId(id)}
+                  >
+                    {name}
+                  </Pokemon>
+                )}
+              />
+            </ul>
+          </Suspense>
+          <Suspense maxDuration={250} fallback={<PokemonListFallback />}>
+            <PokemonDetail
+              pokemonId={selectedPokemonId}
+              render={detail => (
+                <article className="pokemon-detail">
+                  <h2>{detail.name}</h2>
+                  <div>
+                    <p>Weight: {detail.weight}</p>
+                    <p>Height: {detail.height}</p>
+                  </div>
+                </article>
+              )}
+            />
+          </Suspense>
+        </ErrorBoundary>
+      </div>
     </div>
   );
 }
