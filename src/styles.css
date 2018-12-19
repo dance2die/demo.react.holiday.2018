@@ -9,12 +9,16 @@ li {
   text-indent: -1em;
 }
 
-.pokemon-list-item:before {
-  content: "🐱‍";
+li:before {
+  content: "‍🐱‍";
   padding-right: 5px;
 }
 .pokemon-list-item {
   color: palevioletred;
+}
+
+.pokemon-detail {
+  color: yellowgreen;
 }
 
 .content {

@@ -13,6 +13,12 @@ import {
 import "./styles.css";
 
 /*
+
+  December 18, 2018
+  Following Chantastic's React Holiday 15, 16
+  - 15: https://youtu.be/4_pEcb5LHhs
+  - 16: https://youtu.be/u_CIYI0h7ZU
+
   December 14, 2018
   Following Chantastic's React Holiday 13, 14
   - 13 https://youtu.be/CfV4EDqes38
@@ -78,7 +84,7 @@ function App() {
       <h1 className="balloon from-left">
         <SpreadLove /> of Pokemons!
       </h1>
-      <div className="content">
+      <div className="content container is-dark">
         <ErrorBoundary fallback={<PokemonListError />}>
           <Suspense maxDuration={250} fallback={<PokemonListFallback />}>
             <ul>
@@ -101,11 +107,27 @@ function App() {
               pokemonId={selectedPokemonId}
               render={detail => (
                 <article className="pokemon-detail">
-                  <h2>{detail.name}</h2>
-                  <div>
-                    <p>Weight: {detail.weight}</p>
-                    <p>Height: {detail.height}</p>
-                  </div>
+                  <section>
+                    <img
+                      src={detail.sprites.front_default}
+                      alt={`${detail.name}`}
+                    />
+                  </section>
+                  <section>{detail.name}</section>
+                  <section>
+                    <dt>Weight</dt>
+                    <dd>{detail.weight}</dd>
+                    <dt>Height</dt>
+                    <dd>{detail.height}</dd>
+                    <dt>Abilities</dt>
+                    <dd>
+                      <ul>
+                        {detail.abilities.map(({ ability }) => (
+                          <li>{ability.name}</li>
+                        ))}
+                      </ul>
+                    </dd>
+                  </section>
                 </article>
               )}
             />
