@@ -13,6 +13,9 @@ import {
 import "./styles.css";
 
 /*
+  December 19, 2018
+  Following Chantastic's React Holiday 17
+  - 17: https://youtu.be/ftr8JrY0q0U
 
   December 18, 2018
   Following Chantastic's React Holiday 15, 16
@@ -77,7 +80,7 @@ function SpreadLove() {
 }
 
 function App() {
-  const [selectedPokemonId, setSelectedPokemonId] = useState(1);
+  const [selectedPokemonId, setSelectedPokemonId] = useState(0);
 
   return (
     <div className="App">
@@ -102,36 +105,44 @@ function App() {
               />
             </ul>
           </Suspense>
-          <Suspense maxDuration={250} fallback={<PokemonListFallback />}>
-            <PokemonDetail
-              pokemonId={selectedPokemonId}
-              render={detail => (
-                <article className="pokemon-detail">
-                  <section>
-                    <img
-                      src={detail.sprites.front_default}
-                      alt={`${detail.name}`}
-                    />
-                  </section>
-                  <section>{detail.name}</section>
-                  <section>
-                    <dt>Weight</dt>
-                    <dd>{detail.weight}</dd>
-                    <dt>Height</dt>
-                    <dd>{detail.height}</dd>
-                    <dt>Abilities</dt>
-                    <dd>
-                      <ul>
-                        {detail.abilities.map(({ ability }) => (
-                          <li>{ability.name}</li>
-                        ))}
-                      </ul>
-                    </dd>
-                  </section>
-                </article>
-              )}
-            />
-          </Suspense>
+          {selectedPokemonId > 0 ? (
+            <Suspense maxDuration={250} fallback={<PokemonListFallback />}>
+              <PokemonDetail
+                pokemonId={selectedPokemonId}
+                render={detail => (
+                  <article className="pokemon-detail">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPokemonId(0)}
+                    >
+                      👈 back
+                    </button>
+                    <section>
+                      <img
+                        src={detail.sprites.front_default}
+                        alt={`${detail.name}`}
+                      />
+                    </section>
+                    <section>{detail.name}</section>
+                    <section>
+                      <dt>Weight</dt>
+                      <dd>{detail.weight}</dd>
+                      <dt>Height</dt>
+                      <dd>{detail.height}</dd>
+                      <dt>Abilities</dt>
+                      <dd>
+                        <ul>
+                          {detail.abilities.map(({ ability }) => (
+                            <li>{ability.name}</li>
+                          ))}
+                        </ul>
+                      </dd>
+                    </section>
+                  </article>
+                )}
+              />
+            </Suspense>
+          ) : null}
         </ErrorBoundary>
       </div>
     </div>
