@@ -14,6 +14,10 @@ import {
 import "./styles.css";
 
 /*
+  December 22, 2018
+  Following Chantastic's React Holiday 22
+  - 19: https://youtu.be/VWxqNNGDqf4
+
   December 19, 2018
   Following Chantastic's React Holiday 17, 18
   - 17: https://youtu.be/ftr8JrY0q0U
@@ -133,10 +137,15 @@ function App() {
                       👈 back
                     </button>
                     <section>
-                      <Img
-                        src={detail.sprites.front_default}
-                        alt={`${detail.name}`}
-                      />
+                      <Suspense
+                        maxDuration={500}
+                        fallback={<span style={{ fontSize: "96px" }}>🙂</span>}
+                      >
+                        <Img
+                          src={detail.sprites.front_default}
+                          alt={`${detail.name}`}
+                        />
+                      </Suspense>
                     </section>
                     <section>{detail.name}</section>
                     <section>
