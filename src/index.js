@@ -1,5 +1,6 @@
 import React, { useState, Suspense } from "react";
 import ReactDOM from "react-dom";
+import { unstable_createResource as createResource } from "react-cache";
 
 import ErrorBoundary from "./ErrorBoundary";
 import {
@@ -14,8 +15,9 @@ import "./styles.css";
 
 /*
   December 19, 2018
-  Following Chantastic's React Holiday 17
+  Following Chantastic's React Holiday 17, 18
   - 17: https://youtu.be/ftr8JrY0q0U
+  - 18: https://youtu.be/A5kJC7fXVgQ
 
   December 18, 2018
   Following Chantastic's React Holiday 15, 16
@@ -79,6 +81,19 @@ function SpreadLove() {
   );
 }
 
+const ImageResource = createResource(
+  src =>
+    new Promise(resolve => {
+      const img = new Image();
+      img.src = src;
+      img.onload = () => resolve(src);
+    })
+);
+
+function Img({ src, alt, ...rest }) {
+  return <img src={ImageResource.read(src)} alt={alt} {...rest} />;
+}
+
 function App() {
   const [selectedPokemonId, setSelectedPokemonId] = useState(0);
 
@@ -118,7 +133,7 @@ function App() {
                       👈 back
                     </button>
                     <section>
-                      <img
+                      <Img
                         src={detail.sprites.front_default}
                         alt={`${detail.name}`}
                       />
