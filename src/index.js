@@ -1,4 +1,4 @@
-import React, { useState, Suspense } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import ReactDOM from "react-dom";
 import { unstable_createResource as createResource } from "react-cache";
 
@@ -15,8 +15,11 @@ import "./styles.css";
 
 /*
   December 22, 2018
-  Following Chantastic's React Holiday 22
+  Following Chantastic's React Holiday 19, 20, 21
   - 19: https://youtu.be/VWxqNNGDqf4
+  - 20: https://youtu.be/zB7aBe4-U5I
+  - 21.1: https://youtu.be/PMrnj3eGt9c
+  - 21.2: https://youtu.be/_wrJHuUh1UM
 
   December 19, 2018
   Following Chantastic's React Holiday 17, 18
@@ -100,12 +103,23 @@ function Img({ src, alt, ...rest }) {
 
 function App() {
   const [selectedPokemonId, setSelectedPokemonId] = useState(0);
+  const [width, setWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    let handleResize = () => setWidth(window.innerWidth);
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  });
 
   return (
     <div className="App">
       <h1 className="balloon from-left">
         <SpreadLove /> of Pokemons!
       </h1>
+      <article>
+        <strong>Windows Width: {width}</strong>
+      </article>
       <div className="content container is-dark">
         <ErrorBoundary fallback={<PokemonListError />}>
           <Suspense maxDuration={250} fallback={<PokemonListFallback />}>
