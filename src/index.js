@@ -8,12 +8,20 @@ import {
   Pokemons,
   Pokemon,
   ListFallback as PokemonListFallback,
-  ListError as PokemonListError
+  ListError as PokemonListError,
+  DefaultPokemonDetailRenderer as PokemonDetailRender
 } from "./Pokemon";
+
+import WindowWidthContext from "./WindowWidthContext";
 
 import "./styles.css";
 
 /*
+  December 25, 2018
+  Following Chantastic's React Holiday 22, 23, 24
+  - 22: https://youtu.be/Lwu7ndET0uY
+  - 23: https://youtu.be/utejbkI8Ehs
+
   December 22, 2018
   Following Chantastic's React Holiday 19, 20, 21
   - 19: https://youtu.be/VWxqNNGDqf4
@@ -88,21 +96,7 @@ function SpreadLove() {
   );
 }
 
-const ImageResource = createResource(
-  src =>
-    new Promise(resolve => {
-      const img = new Image();
-      img.src = src;
-      img.onload = () => resolve(src);
-    })
-);
-
-function Img({ src, alt, ...rest }) {
-  return <img src={ImageResource.read(src)} alt={alt} {...rest} />;
-}
-
-function App() {
-  const [selectedPokemonId, setSelectedPokemonId] = useState(0);
+function useWindowWidth(initialWidth = window.innerWidth) {
   const [width, setWidth] = useState(window.innerWidth);
 
   useEffect(() => {
@@ -112,78 +106,50 @@ function App() {
     return () => window.removeEventListener("resize", handleResize);
   });
 
+  return width;
+}
+
+function App() {
+  const [selectedPokemonId, setSelectedPokemonId] = useState(0);
+  const width = useWindowWidth();
+
   return (
-    <div className="App">
-      <h1 className="balloon from-left">
-        <SpreadLove /> of Pokemons!
-      </h1>
-      <article>
-        <strong>Windows Width: {width}</strong>
-      </article>
-      <div className="content container is-dark">
-        <ErrorBoundary fallback={<PokemonListError />}>
-          <Suspense maxDuration={250} fallback={<PokemonListFallback />}>
-            <ul>
-              <Pokemons
-                className="pokemons"
-                renderItem={({ name, id }) => (
-                  <Pokemon
-                    key={id}
-                    className="pokemon"
-                    onClick={() => setSelectedPokemonId(id)}
-                  >
-                    {name}
-                  </Pokemon>
-                )}
-              />
-            </ul>
-          </Suspense>
-          {selectedPokemonId > 0 ? (
+    <WindowWidthContext.Provider value={width}>
+      <div className="App">
+        <h1 className="balloon from-left">
+          <SpreadLove /> of Pokemons!
+        </h1>
+        <div className="content container is-dark">
+          <ErrorBoundary fallback={<PokemonListError />}>
             <Suspense maxDuration={250} fallback={<PokemonListFallback />}>
-              <PokemonDetail
-                pokemonId={selectedPokemonId}
-                render={detail => (
-                  <article className="pokemon-detail">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedPokemonId(0)}
+              <ul>
+                <Pokemons
+                  className="pokemons"
+                  renderItem={({ name, id }) => (
+                    <Pokemon
+                      key={id}
+                      className="pokemon"
+                      onClick={() => setSelectedPokemonId(id)}
                     >
-                      👈 back
-                    </button>
-                    <section>
-                      <Suspense
-                        maxDuration={500}
-                        fallback={<span style={{ fontSize: "96px" }}>🙂</span>}
-                      >
-                        <Img
-                          src={detail.sprites.front_default}
-                          alt={`${detail.name}`}
-                        />
-                      </Suspense>
-                    </section>
-                    <section>{detail.name}</section>
-                    <section>
-                      <dt>Weight</dt>
-                      <dd>{detail.weight}</dd>
-                      <dt>Height</dt>
-                      <dd>{detail.height}</dd>
-                      <dt>Abilities</dt>
-                      <dd>
-                        <ul>
-                          {detail.abilities.map(({ ability }) => (
-                            <li>{ability.name}</li>
-                          ))}
-                        </ul>
-                      </dd>
-                    </section>
-                  </article>
-                )}
-              />
+                      {name}
+                    </Pokemon>
+                  )}
+                />
+              </ul>
             </Suspense>
-          ) : null}
-        </ErrorBoundary>
+            {selectedPokemonId > 0 ? (
+              <Suspense maxDuration={250} fallback={<PokemonListFallback />}>
+                <PokemonDetail
+                  pokemonId={selectedPokemonId}
+                  onGoBack={() => setSelectedPokemonId(0)}
+                  render={pokemon => <PokemonDetailRender pokemon={pokemon} />}
+                />
+              </Suspense>
+            ) : null}
+          </ErrorBoundary>
+        </div>
       </div>
-    </div>
+    </WindowWidthContext.Provider>
   );
 }
 
